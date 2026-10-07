@@ -1,5 +1,5 @@
 # Supabase próprio do Fausto — preencher project_id ao ligar o projeto
-project_id = "PREENCHER"
+project_id = "zbntjvgbghftpkwcgasr"
 
 [functions.whatsapp-inbound]
 verify_jwt = false
