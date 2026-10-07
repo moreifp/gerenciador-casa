@@ -1,0 +1,14 @@
+- Task completion history is written by the `on_task_completed` DB trigger into `task_completions` (never by the client), so no completion is lost regardless of which screen updates status.
+- Admin WhatsApp alerts (completion/question) fire from DB triggers via `call_send_whatsapp` → `send-whatsapp`, which re-validates the event and dedupes via `whatsapp_messages(kind, ref_id)`; failures never block the DB write.
+- Recurring tasks are reopened (not recreated) by `reopen-recurring-tasks`; all "today" logic uses America/Sao_Paulo via `_shared/whatsapp.ts` `spToday`.
+- WhatsApp quiet hours live only in `_shared/whatsapp.ts` `sendWhatsApp`: outside the window it logs `status='queued'` with `scheduled_for`, and `flush-whatsapp-queue` delivers them; dedupe treats queued as sent.
+- Employee UI (Hoje/Todas) and admin UI share `TaskCard`, which branches by role; the UI never sets `in_progress` (treated as pending).
+- Use semantic button/chip contrast tokens and shared control styles across screens so mobile readability stays consistent in both themes.
+- Use the same task form for creation and editing, and send assignment alerts only to recipients newly added during editing so existing assignees do not get repeat alerts.
+- Task assignment messages and queued audio share a delivery helper; the text row stores the provider message ID and optional audio URL so quiet-hour flushing sends audio after text without bypassing scheduling.
+- Employee initials are stored on profiles with a shared first/last-name fallback so admin task cards and assignment controls remain consistent with manual corrections.
+- Admin message display status derives from the current linked task status without modifying delivery logs, so completion and delivery remain independent.
+- The admin message list subscribes to task and delivery changes inside a cleaned-up effect, refreshes silently, and combines date/employee/status filters locally so live updates preserve selections.
+
+- Inbound WhatsApp replies are stored in `task_replies` by `whatsapp-inbound`; a reply matched to a task with a "done" word completes it (via a completion proof so history credits the employee), other replies never change status (why: owner wants "feito" to close the task).
+- Employees are WhatsApp-only accounts created by `create-employee-account` with a synthetic `wa+<digits>@gerenciadorcasa.local` email and random password (why: profiles.id references auth.users, and staff never log in); email invites and CSV import were removed.

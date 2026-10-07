@@ -1,0 +1,3 @@
+ALTER TABLE public.profiles ADD COLUMN initials text;
+UPDATE public.profiles SET initials = upper(left(split_part(trim(full_name), ' ', 1), 1) || CASE WHEN array_length(regexp_split_to_array(trim(full_name), '\s+'), 1) > 1 THEN left((regexp_split_to_array(trim(full_name), '\s+'))[array_length(regexp_split_to_array(trim(full_name), '\s+'), 1)], 1) ELSE 'X' END) WHERE nullif(trim(full_name), '') IS NOT NULL AND initials IS NULL;
+ALTER TABLE public.profiles ADD CONSTRAINT profiles_initials_two_chars CHECK (initials IS NULL OR char_length(initials) = 2);

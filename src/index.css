@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Orquídea Wanda — magenta/fuchsia core with deep foliage accents */
+    --background: 270 15% 97%;
+    --foreground: 280 30% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 280 30% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 280 30% 12%;
+
+    /* Deep orchid magenta */
+    --primary: 310 65% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Soft lavender */
+    --secondary: 280 20% 94%;
+    --secondary-foreground: 280 30% 18%;
+
+    --muted: 270 12% 93%;
+    --muted-foreground: 270 10% 34%;
+
+    /* Light orchid pink accent */
+    --accent: 318 50% 92%;
+    --accent-foreground: 310 60% 30%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 15% 88%;
+    --input: 270 15% 88%;
+    --ring: 0 0% 7%;
+    --control-background: 0 0% 100%;
+    --control-foreground: 0 0% 7%;
+    --control-border: 0 0% 20%;
+    --control-selected: 0 0% 0%;
+    --control-selected-foreground: 0 0% 100%;
+    --control-danger: 0 70% 35%;
+    --nav-inactive: 0 0% 33%;
+
+    --radius: 0.75rem;
+
+    /* Status colors */
+    --status-pending: 220 10% 58%;
+    --status-attention: 25 95% 32%;
+    --status-progress: 45 93% 47%;
+    --status-completed: 142 64% 24%;
+    --status-blocked: 0 72% 51%;
+
+    /* Sidebar */
+    --sidebar-background: 280 25% 14%;
+    --sidebar-foreground: 280 10% 90%;
+    --sidebar-primary: 318 60% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 280 20% 22%;
+    --sidebar-accent-foreground: 280 10% 90%;
+    --sidebar-border: 280 20% 22%;
+    --sidebar-ring: 318 60% 60%;
+
+    /* Gradient tokens */
+    --gradient-orchid: linear-gradient(135deg, hsl(310 65% 40%), hsl(280 50% 50%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(270 15% 98%));
+
+    /* Font */
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  .dark {
+    --background: 270 15% 8%;
+    --foreground: 270 10% 90%;
+
+    --card: 270 15% 12%;
+    --card-foreground: 270 10% 90%;
+
+    --popover: 270 15% 12%;
+    --popover-foreground: 270 10% 90%;
+
+    --primary: 318 60% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 280 15% 18%;
+    --secondary-foreground: 280 10% 85%;
+
+    --muted: 270 10% 18%;
+    --muted-foreground: 270 10% 76%;
+
+    --accent: 318 30% 20%;
+    --accent-foreground: 318 50% 75%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 10% 20%;
+    --input: 270 10% 20%;
+    --ring: 0 0% 98%;
+    --control-background: 0 0% 10%;
+    --control-foreground: 0 0% 100%;
+    --control-border: 0 0% 80%;
+    --control-selected: 0 0% 0%;
+    --control-selected-foreground: 0 0% 100%;
+    --control-danger: 0 80% 76%;
+    --nav-inactive: 0 0% 80%;
+
+    /* Status colors - slightly brighter for dark */
+    --status-pending: 220 10% 50%;
+    --status-attention: 25 90% 38%;
+    --status-progress: 45 85% 50%;
+    --status-completed: 142 64% 24%;
+    --status-blocked: 0 65% 50%;
+
+    /* Sidebar */
+    --sidebar-background: 270 20% 8%;
+    --sidebar-foreground: 270 10% 85%;
+    --sidebar-primary: 318 55% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 15% 15%;
+    --sidebar-accent-foreground: 270 10% 85%;
+    --sidebar-border: 270 15% 15%;
+    --sidebar-ring: 318 55% 60%;
+
+    --gradient-orchid: linear-gradient(135deg, hsl(310 55% 45%), hsl(280 40% 40%));
+    --gradient-card: linear-gradient(180deg, hsl(270 15% 12%), hsl(270 15% 10%));
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+
+  @media (max-width: 767px) {
+    html { font-size: 18px; }
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .gradient-orchid {
+    background: var(--gradient-orchid);
+  }
+  .status-pending { background-color: hsl(var(--status-pending)); }
+  .status-progress { background-color: hsl(var(--status-progress)); }
+  .status-completed { background-color: hsl(var(--status-completed)); }
+  .status-blocked { background-color: hsl(var(--status-blocked)); }
+}
+
+/* Page transition animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out;
+}
+
+/* Staggered card animations */
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-card-enter {
+  animation: card-enter 0.3s ease-out both;
+}
