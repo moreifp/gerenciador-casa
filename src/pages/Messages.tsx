@@ -112,7 +112,7 @@ export default function Messages() {
     void fetchMessages();
     const refresh = () => { void fetchMessages(false); };
     const channel = supabase
-      .channel('admin-whatsapp-messages')
+      .channel('admin-whatsapp-messages-' + crypto.randomUUID())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'whatsapp_messages' }, refresh)
       .subscribe(status => { if (status === 'SUBSCRIBED') refresh(); });

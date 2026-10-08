@@ -30,7 +30,7 @@ function start() {
   if (started) return;
   started = true;
   load();
-  supabase.channel('task-replies').on('postgres_changes', { event: '*', schema: 'public', table: 'task_replies' }, load).subscribe();
+  supabase.channel('task-replies-' + crypto.randomUUID()).on('postgres_changes', { event: '*', schema: 'public', table: 'task_replies' }, load).subscribe();
 }
 
 export function useTaskReplies(taskId: string) {
