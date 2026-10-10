@@ -56,7 +56,7 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md p-8 space-y-6">
         <div className="text-center">
-          <p className="font-display text-lg font-bold text-primary"><img src="/icon-192x192.png" alt="" className="inline-block size-8 rounded-lg mr-2 align-middle" />Gerenciador Casa</p>
+          <p className="font-display text-lg font-bold text-primary"><img src="/logo.png" alt="" className="inline-block h-10 w-auto mr-2 align-middle" />Gerenciador Casa</p>
           <h1 className="font-display text-2xl font-bold text-primary">Nova Senha</h1>
           <p className="text-sm text-muted-foreground mt-1">Digite sua nova senha</p>
         </div>
