@@ -580,6 +580,7 @@ export type Database = {
       }
       tasks: {
         Row: {
+          cleared_at: string | null
           audio_transcription: string | null
           audio_url: string | null
           created_at: string
@@ -599,6 +600,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cleared_at?: string | null
           audio_transcription?: string | null
           audio_url?: string | null
           created_at?: string
@@ -618,6 +620,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cleared_at?: string | null
           audio_transcription?: string | null
           audio_url?: string | null
           created_at?: string

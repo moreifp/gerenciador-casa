@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import MediaPreview from './MediaPreview';
 import TaskActionSheet, { type SheetMode } from './TaskActionSheet';
 import { Card } from '@/components/ui/card';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, RotateCcw, MessageSquare, ChevronDown, ChevronUp, Trash2, HelpCircle, Paperclip, Undo2, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -174,8 +175,11 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
     toast.success('Tarefa pendente');
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Apagar esta tarefa? Não dá para desfazer.')) return;
+  const isRecurring = task.type === 'routine' && task.recurrence_type !== 'none';
+  const [askDelete, setAskDelete] = useState(false);
+
+  const deleteForever = async () => {
+    setAskDelete(false);
     await supabase.from('task_feedback').delete().eq('task_id', task.id);
     await supabase.from('task_proofs').delete().eq('task_id', task.id);
     await supabase.from('task_assignees').delete().eq('task_id', task.id);
@@ -183,6 +187,23 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
     if (error) { toast.error(error.message); return; }
     toast.success('Tarefa apagada');
     await refreshTasks();
+  };
+
+  /** Repetitiva: conta como feita hoje e some da tela até a próxima repetição. */
+  const clearToday = async () => {
+    setAskDelete(false);
+    const { error } = await supabase.from('tasks')
+      .update({ status: 'completed', cleared_at: new Date().toISOString() }).eq('id', task.id);
+    if (error) { toast.error('Não foi possível tirar da tela'); return; }
+    markRepliesReviewed(task.id, user?.id);
+    toast.success('Feita hoje. Volta na próxima repetição.');
+    await refreshTasks();
+  };
+
+  const handleDelete = async () => {
+    if (isRecurring) { setAskDelete(true); return; }
+    if (!confirm('Apagar esta tarefa? Não dá para desfazer.')) return;
+    await deleteForever();
   };
 
   return <Card data-task-id={task.id} className={cn('p-4 space-y-3 border-l-4', statusBorder[status], highlighted && 'ring-2 ring-primary')}>
@@ -222,5 +243,18 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
       {(task.audio_url || task.image_urls.length > 0) && <MediaPreview imageUrls={task.image_urls} audioUrl={task.audio_url} />}
       {proofs.map(proof => <div key={proof.id} className="space-y-2 border-b border-border pb-2 text-base"><p>{proof.comment || proof.audio_transcription || 'Comprovação'}</p><MediaPreview imageUrls={proof.photo_urls} audioUrl={proof.audio_url} /></div>)}
     </div>}
+    <AlertDialog open={askDelete} onOpenChange={setAskDelete}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-[22px]">Tarefa que se repete</AlertDialogTitle>
+          <AlertDialogDescription className="text-lg">{task.title}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="grid gap-3">
+          <Button onClick={clearToday} className="h-16 text-lg font-bold !bg-status-completed !border-status-completed !text-white"><CheckCircle className="size-7" /> Tirar da tela (volta na próxima)</Button>
+          <Button variant="destructive" onClick={deleteForever} className="h-16 text-lg"><Trash2 className="size-7" /> Apagar para sempre</Button>
+          <Button variant="outline" onClick={() => setAskDelete(false)} className="h-14 text-lg">Cancelar</Button>
+        </div>
+      </AlertDialogContent>
+    </AlertDialog>
   </Card>;
 }

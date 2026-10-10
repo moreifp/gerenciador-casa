@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
       if (!shouldReopen(t, today, refDay)) continue;
 
       const { error: upErr, count } = await db.from("tasks")
-        .update({ status: "pending", due_date: today }, { count: "exact" })
+        .update({ status: "pending", due_date: today, cleared_at: null }, { count: "exact" })
         .eq("id", t.id).eq("status", "completed");
       if (!upErr && count) {
         reopened += count;

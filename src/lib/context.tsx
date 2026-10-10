@@ -95,6 +95,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       .from('tasks')
       .select('*')
       .eq('is_archived', false)
+      .is('cleared_at', null)
       .order('created_at', { ascending: false });
 
     if (!tasksData) { setTasks([]); return; }
