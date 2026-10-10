@@ -57,6 +57,12 @@ export function nextWindowStart(now = new Date()): string {
   return `${day}T${String(QUIET_START + 3).padStart(2, "0")}:00:00Z`;
 }
 
+/** Perfis que recebem a qualquer hora (fora da regra das 07h–19h). Segredo WA_SEM_HORARIO: ids separados por vírgula. */
+export function semHorario(userId?: string | null): boolean {
+  if (!userId) return false;
+  return (Deno.env.get("WA_SEM_HORARIO") ?? "").split(",").map((s) => s.trim()).filter(Boolean).includes(userId);
+}
+
 export function isQuietNow(now = new Date()) {
   const h = spHour(now);
   return h < QUIET_START || h >= QUIET_END;
@@ -138,7 +144,7 @@ export async function sendWhatsApp(db: SupabaseClient, a: SendArgs): Promise<boo
   };
   if (!cleanPhone) { await log("failed", { error: "Telefone não cadastrado" }); return false; }
   if (a.kind && a.ref_id && await alreadySent(db, a.kind, a.ref_id, a.user_id)) return true;
-  if (!a.ignoreQuietHours && isQuietNow()) {
+  if (!a.ignoreQuietHours && !semHorario(a.user_id) && isQuietNow()) {
     await log("queued", { scheduled_for: nextWindowStart() });
     return true;
   }
