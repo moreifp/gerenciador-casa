@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import MediaPreview from './MediaPreview';
 import TaskActionSheet, { type SheetMode } from './TaskActionSheet';
 import { Card } from '@/components/ui/card';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, RotateCcw, MessageSquare, ChevronDown, ChevronUp, Trash2, HelpCircle, Paperclip, Undo2, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -176,10 +175,8 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
   };
 
   const isRecurring = task.type === 'routine' && task.recurrence_type !== 'none';
-  const [askDelete, setAskDelete] = useState(false);
 
   const deleteForever = async () => {
-    setAskDelete(false);
     await supabase.from('task_feedback').delete().eq('task_id', task.id);
     await supabase.from('task_proofs').delete().eq('task_id', task.id);
     await supabase.from('task_assignees').delete().eq('task_id', task.id);
@@ -191,7 +188,6 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
 
   /** Repetitiva: conta como feita hoje e some da tela até a próxima repetição. */
   const clearToday = async () => {
-    setAskDelete(false);
     const { error } = await supabase.from('tasks')
       .update({ status: 'completed', cleared_at: new Date().toISOString() }).eq('id', task.id);
     if (error) { toast.error('Não foi possível tirar da tela'); return; }
@@ -201,8 +197,10 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
   };
 
   const handleDelete = async () => {
-    if (isRecurring) { setAskDelete(true); return; }
-    if (!confirm('Apagar esta tarefa? Não dá para desfazer.')) return;
+    const msg = isRecurring
+      ? 'Apagar esta tarefa e todas as próximas repetições? Não dá para desfazer.'
+      : 'Apagar esta tarefa? Não dá para desfazer.';
+    if (!confirm(msg)) return;
     await deleteForever();
   };
 
@@ -218,7 +216,8 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
     </div>
     <div className="flex gap-2">
       <Button variant="outline" size="icon" title="Editar" aria-label="Editar tarefa" onClick={() => navigate(`/tasks/${task.id}/edit`)}><Pencil className="h-6 w-6" /></Button>
-      <Button variant="destructive" size="icon" title="Apagar" aria-label="Apagar tarefa" onClick={handleDelete}><Trash2 className="h-6 w-6" /></Button>
+      {isRecurring && <Button onClick={clearToday} title="Tirar só a de hoje (as próximas continuam)" aria-label="Tirar só a de hoje" className="flex-1 !bg-status-completed !border-status-completed !text-white font-bold hover:!bg-status-completed"><CheckCircle className="h-6 w-6 shrink-0" /> Só hoje</Button>}
+      <Button variant="destructive" title={isRecurring ? 'Apagar a tarefa e as próximas repetições' : 'Apagar'} aria-label="Apagar tarefa" onClick={handleDelete} className={isRecurring ? 'flex-1 font-bold' : ''} size={isRecurring ? 'default' : 'icon'}><Trash2 className="h-6 w-6 shrink-0" />{isRecurring && ' Apagar'}</Button>
     </div>
     <Button type="button" variant="ghost" className="w-full justify-start" onClick={() => setExpanded(v => !v)} aria-expanded={expanded}><MessageSquare className="h-6 w-6" /> Respostas {unreviewed > 0 && <span className="rounded-full bg-control-selected text-control-selected-foreground px-2.5 py-0.5 text-sm font-bold">💬 {unreviewed}</span>} {expanded ? <ChevronUp className="h-6 w-6 ml-auto" /> : <ChevronDown className="h-6 w-6 ml-auto" />}</Button>
     {expanded && <div className="border-t border-border pt-3 space-y-3">
@@ -243,18 +242,5 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
       {(task.audio_url || task.image_urls.length > 0) && <MediaPreview imageUrls={task.image_urls} audioUrl={task.audio_url} />}
       {proofs.map(proof => <div key={proof.id} className="space-y-2 border-b border-border pb-2 text-base"><p>{proof.comment || proof.audio_transcription || 'Comprovação'}</p><MediaPreview imageUrls={proof.photo_urls} audioUrl={proof.audio_url} /></div>)}
     </div>}
-    <AlertDialog open={askDelete} onOpenChange={setAskDelete}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-[22px]">Tarefa que se repete</AlertDialogTitle>
-          <AlertDialogDescription className="text-lg">{task.title}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <div className="grid gap-3">
-          <Button onClick={clearToday} className="h-16 text-lg font-bold !bg-status-completed !border-status-completed !text-white"><CheckCircle className="size-7" /> Tirar da tela (volta na próxima)</Button>
-          <Button variant="destructive" onClick={deleteForever} className="h-16 text-lg"><Trash2 className="size-7" /> Apagar para sempre</Button>
-          <Button variant="outline" onClick={() => setAskDelete(false)} className="h-14 text-lg">Cancelar</Button>
-        </div>
-      </AlertDialogContent>
-    </AlertDialog>
   </Card>;
 }
