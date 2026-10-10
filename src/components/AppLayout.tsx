@@ -76,7 +76,7 @@ export default function AppLayout() {
       <aside className="hidden md:flex w-64 flex-col bg-sidebar text-sidebar-foreground">
         <div className="p-6">
           <h1 className="font-display text-xl font-bold text-sidebar-primary">
-            🌸 Gerenciador Casa
+            <img src="/icon-192x192.png" alt="" className="inline-block size-8 rounded-lg mr-2 align-middle" />Gerenciador Casa
           </h1>
         </div>
 
@@ -133,7 +133,7 @@ export default function AppLayout() {
       {/* Mobile Header */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-card border-b" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top, 0px))' }}>
-          <h1 className="font-display text-lg font-bold text-primary">🌸 Gerenciador Casa</h1>
+          <h1 className="font-display text-lg font-bold text-primary"><img src="/icon-192x192.png" alt="" className="inline-block size-8 rounded-lg mr-2 align-middle" />Gerenciador Casa</h1>
           <div className="flex items-center gap-1">
             <NotificationBell />
              <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} aria-label="Perfil" className="flex items-center justify-center">

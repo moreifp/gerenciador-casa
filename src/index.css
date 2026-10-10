@@ -5,35 +5,35 @@
 @layer base {
   :root {
     /* Orquídea Wanda — magenta/fuchsia core with deep foliage accents */
-    --background: 270 15% 97%;
-    --foreground: 280 30% 12%;
+    --background: 0 8% 97%;
+    --foreground: 0 8% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 280 30% 12%;
+    --card-foreground: 0 8% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 280 30% 12%;
+    --popover-foreground: 0 8% 12%;
 
     /* Deep orchid magenta */
-    --primary: 310 65% 40%;
+    --primary: 357 89% 46%;
     --primary-foreground: 0 0% 100%;
 
     /* Soft lavender */
-    --secondary: 280 20% 94%;
-    --secondary-foreground: 280 30% 18%;
+    --secondary: 0 8% 94%;
+    --secondary-foreground: 0 8% 18%;
 
-    --muted: 270 12% 93%;
-    --muted-foreground: 270 10% 34%;
+    --muted: 0 8% 93%;
+    --muted-foreground: 0 8% 34%;
 
     /* Light orchid pink accent */
-    --accent: 318 50% 92%;
-    --accent-foreground: 310 60% 30%;
+    --accent: 357 80% 94%;
+    --accent-foreground: 357 70% 32%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 15% 88%;
-    --input: 270 15% 88%;
+    --border: 0 8% 88%;
+    --input: 0 8% 88%;
     --ring: 0 0% 7%;
     --control-background: 0 0% 100%;
     --control-foreground: 0 0% 7%;
@@ -53,18 +53,18 @@
     --status-blocked: 0 72% 51%;
 
     /* Sidebar */
-    --sidebar-background: 280 25% 14%;
-    --sidebar-foreground: 280 10% 90%;
-    --sidebar-primary: 318 60% 60%;
+    --sidebar-background: 0 8% 14%;
+    --sidebar-foreground: 0 8% 90%;
+    --sidebar-primary: 357 85% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 280 20% 22%;
-    --sidebar-accent-foreground: 280 10% 90%;
-    --sidebar-border: 280 20% 22%;
-    --sidebar-ring: 318 60% 60%;
+    --sidebar-accent: 0 8% 22%;
+    --sidebar-accent-foreground: 0 8% 90%;
+    --sidebar-border: 0 8% 22%;
+    --sidebar-ring: 357 85% 58%;
 
     /* Gradient tokens */
-    --gradient-orchid: linear-gradient(135deg, hsl(310 65% 40%), hsl(280 50% 50%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(270 15% 98%));
+    --gradient-orchid: linear-gradient(135deg, hsl(357 89% 46%), hsl(350 80% 38%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 8% 98%));
 
     /* Font */
     --font-display: 'Playfair Display', serif;
@@ -72,32 +72,32 @@
   }
 
   .dark {
-    --background: 270 15% 8%;
-    --foreground: 270 10% 90%;
+    --background: 0 8% 8%;
+    --foreground: 0 8% 90%;
 
-    --card: 270 15% 12%;
-    --card-foreground: 270 10% 90%;
+    --card: 0 8% 12%;
+    --card-foreground: 0 8% 90%;
 
-    --popover: 270 15% 12%;
-    --popover-foreground: 270 10% 90%;
+    --popover: 0 8% 12%;
+    --popover-foreground: 0 8% 90%;
 
-    --primary: 318 60% 55%;
+    --primary: 357 85% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 280 15% 18%;
-    --secondary-foreground: 280 10% 85%;
+    --secondary: 0 8% 18%;
+    --secondary-foreground: 0 8% 85%;
 
-    --muted: 270 10% 18%;
-    --muted-foreground: 270 10% 76%;
+    --muted: 0 8% 18%;
+    --muted-foreground: 0 8% 76%;
 
-    --accent: 318 30% 20%;
-    --accent-foreground: 318 50% 75%;
+    --accent: 357 30% 20%;
+    --accent-foreground: 357 70% 78%;
 
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 10% 20%;
-    --input: 270 10% 20%;
+    --border: 0 8% 20%;
+    --input: 0 8% 20%;
     --ring: 0 0% 98%;
     --control-background: 0 0% 10%;
     --control-foreground: 0 0% 100%;
@@ -115,17 +115,17 @@
     --status-blocked: 0 65% 50%;
 
     /* Sidebar */
-    --sidebar-background: 270 20% 8%;
-    --sidebar-foreground: 270 10% 85%;
-    --sidebar-primary: 318 55% 60%;
+    --sidebar-background: 0 8% 8%;
+    --sidebar-foreground: 0 8% 85%;
+    --sidebar-primary: 357 85% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 270 15% 15%;
-    --sidebar-accent-foreground: 270 10% 85%;
-    --sidebar-border: 270 15% 15%;
-    --sidebar-ring: 318 55% 60%;
+    --sidebar-accent: 0 8% 15%;
+    --sidebar-accent-foreground: 0 8% 85%;
+    --sidebar-border: 0 8% 15%;
+    --sidebar-ring: 357 85% 60%;
 
-    --gradient-orchid: linear-gradient(135deg, hsl(310 55% 45%), hsl(280 40% 40%));
-    --gradient-card: linear-gradient(180deg, hsl(270 15% 12%), hsl(270 15% 10%));
+    --gradient-orchid: linear-gradient(135deg, hsl(357 80% 52%), hsl(350 70% 40%));
+    --gradient-card: linear-gradient(180deg, hsl(0 8% 12%), hsl(0 8% 10%));
   }
 
   * {
