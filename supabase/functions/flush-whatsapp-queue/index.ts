@@ -1,3 +1,4 @@
+import { isCron, requireCronOrAdmin } from "../_shared/guard.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { adminClient, corsHeaders, deliver, deliverAudio, deliverImage, isQuietNow, json } from "../_shared/whatsapp.ts";
 
@@ -25,7 +26,8 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const db = adminClient();
     const force = body?.force === true;
-    if (force && !(await canForce(req, db))) return json({ error: "Forbidden" }, 403);
+    if (force && !isCron(req) && !(await canForce(req, db))) return json({ error: "Forbidden" }, 403);
+    if (!force) { const denied = await requireCronOrAdmin(req); if (denied) return denied; }
     if (!force && isQuietNow()) return json({ sent: 0, message: "Fora da janela 07h–19h" });
     let q = db.from("whatsapp_messages")
       .select("id, phone, message, audio_url, image_url").eq("status", "queued");
