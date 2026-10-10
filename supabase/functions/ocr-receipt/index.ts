@@ -18,81 +18,78 @@ serve(async (req) => {
       });
     }
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not configured");
+    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not configured");
 
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+    // Aceita "data:image/png;base64,..." ou só o base64 (assume JPEG).
+    const m = image_base64.match(/^data:([^;]+);base64,(.*)$/s);
+    const mediaType = m ? m[1] : "image/jpeg";
+    const data64 = m ? m[2] : image_base64;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${GEMINI_API_KEY}`,
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: Deno.env.get("OCR_MODEL") ?? "gemini-2.5-flash",
+        model: Deno.env.get("OCR_MODEL") ?? "claude-haiku-4-5",
+        max_tokens: 2048,
+        system:
+          "Você é um assistente especializado em extrair dados de recibos e notas fiscais brasileiras. Analise a imagem e extraia as informações usando a ferramenta fornecida. Se não conseguir identificar algum campo, deixe-o vazio ou null. Valores monetários devem ser números decimais (ex: 45.90). Datas no formato YYYY-MM-DD.",
         messages: [
-          {
-            role: "system",
-            content:
-              "Você é um assistente especializado em extrair dados de recibos e notas fiscais brasileiras. Analise a imagem e extraia as informações usando a função fornecida. Se não conseguir identificar algum campo, deixe-o vazio ou null. Valores monetários devem ser números decimais (ex: 45.90). Datas no formato YYYY-MM-DD.",
-          },
           {
             role: "user",
             content: [
+              { type: "image", source: { type: "base64", media_type: mediaType, data: data64 } },
               { type: "text", text: "Extraia os dados deste recibo/nota fiscal." },
-              {
-                type: "image_url",
-                image_url: { url: image_base64.startsWith("data:") ? image_base64 : `data:image/jpeg;base64,${image_base64}` },
-              },
             ],
           },
         ],
         tools: [
           {
-            type: "function",
-            function: {
-              name: "extract_receipt",
-              description: "Extrair dados estruturados de um recibo ou nota fiscal",
-              parameters: {
-                type: "object",
-                properties: {
-                  vendor_name: { type: "string", description: "Nome do estabelecimento" },
-                  receipt_date: { type: "string", description: "Data do recibo no formato YYYY-MM-DD" },
-                  total_amount: { type: "number", description: "Valor total em reais" },
+            name: "extract_receipt",
+            description: "Extrair dados estruturados de um recibo ou nota fiscal",
+            input_schema: {
+              type: "object",
+              properties: {
+                vendor_name: { type: "string", description: "Nome do estabelecimento" },
+                receipt_date: { type: "string", description: "Data do recibo no formato YYYY-MM-DD" },
+                total_amount: { type: "number", description: "Valor total em reais" },
+                items: {
+                  type: "array",
                   items: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        description: { type: "string" },
-                        amount: { type: "number" },
-                      },
-                      required: ["description"],
+                    type: "object",
+                    properties: {
+                      description: { type: "string" },
+                      amount: { type: "number" },
                     },
-                    description: "Itens listados no recibo",
+                    required: ["description"],
                   },
-                  raw_text: { type: "string", description: "Transcrição completa do texto visível no recibo" },
+                  description: "Itens listados no recibo",
                 },
-                required: ["vendor_name", "total_amount", "raw_text"],
-                additionalProperties: false,
+                raw_text: { type: "string", description: "Transcrição completa do texto visível no recibo" },
               },
+              required: ["vendor_name", "total_amount", "raw_text"],
             },
           },
         ],
-        tool_choice: { type: "function", function: { name: "extract_receipt" } },
+        tool_choice: { type: "tool", name: "extract_receipt" },
       }),
     });
 
     if (!response.ok) {
       const status = response.status;
       const text = await response.text();
-      console.error("AI gateway error:", status, text);
+      console.error("Anthropic error:", status, text);
 
-      if (status === 429) {
+      if (status === 429 || status === 529) {
         return new Response(JSON.stringify({ error: "Muitas requisições. Tente novamente em alguns segundos." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      if (status === 402) {
+      if (status === 402 || (status === 400 && text.includes("credit"))) {
         return new Response(JSON.stringify({ error: "Créditos de IA esgotados." }), {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -101,15 +98,15 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+    const toolUse = (data.content ?? []).find((c: { type: string }) => c.type === "tool_use");
 
-    if (!toolCall) {
+    if (!toolUse) {
       return new Response(JSON.stringify({ error: "Não foi possível extrair dados do recibo." }), {
         status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const extracted = JSON.parse(toolCall.function.arguments);
+    const extracted = toolUse.input;
 
     return new Response(JSON.stringify(extracted), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
