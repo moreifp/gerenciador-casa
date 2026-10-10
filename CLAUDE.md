@@ -10,4 +10,4 @@
 ## Onde roda
 - Front: Cloudflare Workers (`wrangler.jsonc`, SPA estática de `dist/`). `npm run deploy`.
 - Banco, auth, storage, edge functions e pg_cron: Supabase próprio do Fausto.
-- WhatsApp: Z-API (webhook → `whatsapp-inbound`); áudio: ElevenLabs; OCR: Gemini (`GEMINI_API_KEY`).
+- WhatsApp: Z-API (webhook → `whatsapp-inbound`); áudio: ElevenLabs; OCR de recibos: Anthropic (`ANTHROPIC_API_KEY`).
