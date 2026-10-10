@@ -216,8 +216,8 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
     </div>
     <div className="flex gap-2">
       <Button variant="outline" size="icon" title="Editar" aria-label="Editar tarefa" onClick={() => navigate(`/tasks/${task.id}/edit`)}><Pencil className="h-6 w-6" /></Button>
-      {isRecurring && <Button onClick={clearToday} title="Tirar só a de hoje (as próximas continuam)" aria-label="Tirar só a de hoje" className="flex-1 !bg-status-completed !border-status-completed !text-white font-bold hover:!bg-status-completed"><CheckCircle className="h-6 w-6 shrink-0" /> Só hoje</Button>}
-      <Button variant="destructive" title={isRecurring ? 'Apagar a tarefa e as próximas repetições' : 'Apagar'} aria-label="Apagar tarefa" onClick={handleDelete} className={isRecurring ? 'flex-1 font-bold' : ''} size={isRecurring ? 'default' : 'icon'}><Trash2 className="h-6 w-6 shrink-0" />{isRecurring && ' Apagar'}</Button>
+      {isRecurring && <Button size="icon" onClick={clearToday} title="Tirar só a de hoje (as próximas continuam)" aria-label="Tirar só a de hoje" className="!bg-status-completed !border-status-completed !text-white hover:!bg-status-completed"><Trash2 className="h-6 w-6" /></Button>}
+      <Button variant="destructive" size="icon" title={isRecurring ? 'Apagar a tarefa e as próximas repetições' : 'Apagar'} aria-label="Apagar tarefa" onClick={handleDelete}><Trash2 className="h-6 w-6" /></Button>
     </div>
     <Button type="button" variant="ghost" className="w-full justify-start" onClick={() => setExpanded(v => !v)} aria-expanded={expanded}><MessageSquare className="h-6 w-6" /> Respostas {unreviewed > 0 && <span className="rounded-full bg-control-selected text-control-selected-foreground px-2.5 py-0.5 text-sm font-bold">💬 {unreviewed}</span>} {expanded ? <ChevronUp className="h-6 w-6 ml-auto" /> : <ChevronDown className="h-6 w-6 ml-auto" />}</Button>
     {expanded && <div className="border-t border-border pt-3 space-y-3">
