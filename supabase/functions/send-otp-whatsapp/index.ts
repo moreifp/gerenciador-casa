@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
 
     const zapiUrl = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/send-text`;
 
-    const message = `🌸 *Gerenciador Casa*\n\nSeu código de acesso é: *${code}*\n\nVálido por 5 minutos.`;
+    const message = `👷📋 *Gerenciador Casa*\n\nSeu código de acesso é: *${code}*\n\nVálido por 5 minutos.`;
 
     const response = await fetch(zapiUrl, {
       method: "POST",

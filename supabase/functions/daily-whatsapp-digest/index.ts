@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
       let sent = 0;
       for (const p of profiles || []) {
         if (!p.phone || await alreadySent(db, "employee_today", ref, p.id)) continue;
-        const msg = `🌸 *Suas tarefas de hoje*\n${byUser.get(p.id)!.map((t) => `• ${t}`).join("\n")}\n\n👉 ${taskLink()}`;
+        const msg = `👷📋 *Suas tarefas de hoje*\n${byUser.get(p.id)!.map((t) => `• ${t}`).join("\n")}\n\n👉 ${taskLink()}`;
         if (await sendWhatsApp(db, { phone: p.phone, message: msg, user_id: p.id, kind: "employee_today", ref_id: ref, ignoreQuietHours: true })) sent++;
       }
       console.log(`employee_today ${today}: ${sent} enviados`);
