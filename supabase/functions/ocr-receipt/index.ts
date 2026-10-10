@@ -1,3 +1,4 @@
+import { requireUser } from "../_shared/guard.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -8,6 +9,7 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  { const denied = await requireUser(req); if (denied) return denied; }
 
   try {
     const { image_base64 } = await req.json();

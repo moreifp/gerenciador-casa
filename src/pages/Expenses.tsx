@@ -1,3 +1,4 @@
+import { useReceiptUrls } from '@/lib/receiptUrl';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Receipt, Camera } from 'lucide-react';
@@ -32,6 +33,7 @@ export default function Expenses() {
 
   // Detail dialog
   const [selected, setSelected] = useState<ExpenseReport | null>(null);
+  const selectedPhotos = useReceiptUrls(selected?.receipt_photo_urls);
   const [adminComment, setAdminComment] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -162,7 +164,7 @@ export default function Expenses() {
               {/* Photos */}
               {selected.receipt_photo_urls?.length > 0 && (
                 <div className="flex gap-2 overflow-x-auto">
-                  {selected.receipt_photo_urls.map((url, i) => (
+                  {selectedPhotos.map((url, i) => (
                     <img key={i} src={url} alt={`Recibo ${i + 1}`} className="h-40 rounded-lg object-cover" />
                   ))}
                 </div>

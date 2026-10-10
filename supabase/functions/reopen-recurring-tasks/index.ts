@@ -1,3 +1,4 @@
+import { requireCronOrAdmin } from "../_shared/guard.ts";
 import { adminClient, corsHeaders, json, sendWhatsApp, spToday } from "../_shared/whatsapp.ts";
 import { assignmentMessage } from '../_shared/assignment-message.ts';
 
@@ -30,6 +31,7 @@ export function shouldReopen(
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  { const denied = await requireCronOrAdmin(req); if (denied) return denied; }
   try {
     const db = adminClient();
     const today = spToday();

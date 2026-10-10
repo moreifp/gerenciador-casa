@@ -1,3 +1,4 @@
+import { requireCronOrAdmin } from "../_shared/guard.ts";
 import {
   adminClient, alreadySent, corsHeaders, getAdmins, json, sendWhatsApp, spToday, taskLink,
 } from "../_shared/whatsapp.ts";
@@ -5,6 +6,7 @@ import {
 // body: { kind: "admin_overdue" | "employee_today" }
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  { const denied = await requireCronOrAdmin(req); if (denied) return denied; }
   try {
     const { kind } = await req.json().catch(() => ({}));
     const db = adminClient();

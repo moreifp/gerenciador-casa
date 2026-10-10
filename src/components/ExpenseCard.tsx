@@ -4,6 +4,7 @@ import { Receipt, ArrowDownLeft, ArrowUpRight, CheckCircle2, XCircle, Clock, Cre
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useReceiptUrls } from '@/lib/receiptUrl';
 
 export const CREDIT_CARD_LABELS: Record<string, string> = {
   hipercard: 'Hipercard',
@@ -51,6 +52,7 @@ export default function ExpenseCard({ expense, employeeName, onClick }: Props) {
   const st = statusConfig[expense.status];
   const StatusIcon = st.icon;
 
+  const thumb = useReceiptUrls(expense.receipt_photo_urls?.slice(0, 1))[0];
   return (
     <Card
       className={cn('cursor-pointer hover:shadow-md transition-shadow', onClick && 'cursor-pointer')}
@@ -59,8 +61,8 @@ export default function ExpenseCard({ expense, employeeName, onClick }: Props) {
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            {expense.receipt_photo_urls?.[0] ? (
-              <img src={expense.receipt_photo_urls[0]} alt="Recibo" className="h-12 w-12 rounded-lg object-cover shrink-0" />
+            {thumb ? (
+              <img src={thumb} alt="Recibo" className="h-12 w-12 rounded-lg object-cover shrink-0" />
             ) : (
               <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center shrink-0">
                 <Receipt className="h-5 w-5 text-muted-foreground" />
