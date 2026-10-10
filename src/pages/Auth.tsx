@@ -162,7 +162,7 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md p-8 space-y-6">
         <div className="text-center">
-          <h1 className="font-display text-[26px] font-bold text-primary"><img src="/icon-192x192.png" alt="" className="inline-block size-8 rounded-lg mr-2 align-middle" />Gerenciador Casa</h1>
+          <h1 className="font-display text-[26px] font-bold text-primary"><img src="/logo.png" alt="" className="mx-auto mb-2 h-28 w-auto" />Gerenciador Casa</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {mode === 'login' && 'Entre com sua conta'}
             {mode === 'signup' && 'Crie sua conta'}

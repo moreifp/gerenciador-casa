@@ -63,7 +63,7 @@ export default function InstallBanner() {
     <div className="fixed bottom-16 left-2 right-2 md:bottom-4 md:left-auto md:right-4 md:max-w-sm z-50 animate-fade-in">
       <div className="bg-card border border-border rounded-xl shadow-lg p-4">
         <div className="flex items-start gap-3">
-          <img src="/icon-192x192.png" alt="" className="size-10 rounded-xl shrink-0" />
+          <img src="/logo.png" alt="" className="size-10 object-contain shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-sm text-foreground">Instale o App</p>
             {ios ? (
