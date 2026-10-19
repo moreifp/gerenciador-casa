@@ -158,6 +158,7 @@ export default function TaskForm({ initialTask }: { initialTask?: Task }) {
                   defaultMonth={(() => { const [y, m, d] = dueDate.split('-').map(Number); return new Date(y, m - 1, d); })()}
                   onSelect={(date) => { if (date) { setDueDate(format(date, 'yyyy-MM-dd')); setDatePickerOpen(false); } }}
                   initialFocus
+                  classNames={{ day_selected: '!bg-[#DE0D18] !text-white hover:!bg-[#DE0D18] hover:!text-white focus:!bg-[#DE0D18] focus:!text-white font-bold' }}
                   className="p-3 pointer-events-auto"
                 />
               </PopoverContent>
