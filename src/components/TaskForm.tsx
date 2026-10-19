@@ -136,7 +136,7 @@ export default function TaskForm({ initialTask }: { initialTask?: Task }) {
           <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
             {people.map(person => {
               const selected = assigneeIds.includes(person.id);
-              return <Button key={person.id} type="button" variant="outline" title={person.full_name ?? 'Sem nome'} aria-label={person.full_name ?? 'Sem nome'} aria-pressed={selected} onClick={() => setAssigneeIds(prev => selected ? prev.filter(id => id !== person.id) : [...prev, person.id])} className={cn('w-full aspect-square min-h-16 min-w-16 p-0 text-[22px] font-bold border-[1.5px] border-control-border rounded-md', selected ? '!bg-control-selected !text-control-selected-foreground' : '!bg-control !text-control-foreground')}>{person.initials || profileInitials(person.full_name)}</Button>;
+              return <Button key={person.id} type="button" variant="outline" title={person.full_name ?? 'Sem nome'} aria-label={person.full_name ?? 'Sem nome'} aria-pressed={selected} onClick={() => setAssigneeIds(prev => selected ? prev.filter(id => id !== person.id) : [...prev, person.id])} className={cn('w-full aspect-square min-h-16 min-w-16 p-0 text-[22px] font-bold border-[1.5px] border-control-border rounded-md', selected ? '!bg-[#DE0D18] !text-white !border-[#DE0D18]' : '!bg-control !text-control-foreground')}>{person.initials || profileInitials(person.full_name)}</Button>;
             })}
           </div>
           {selectedNames.length > 0 && <p className="text-sm text-muted-foreground">{selectedNames.join(', ')}</p>}
