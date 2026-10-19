@@ -145,11 +145,11 @@ export default function TaskForm({ initialTask }: { initialTask?: Task }) {
         <section className="space-y-3">
           <Label>Quando</Label>
           <div className="grid grid-cols-3 gap-2">
-            <Button type="button" variant="outline" onClick={() => { setDueDate(spToday()); setDatePickerOpen(false); }} className={cn('min-w-0 px-1', dueDate === spToday() && '!bg-control-selected !text-control-selected-foreground')}>Hoje</Button>
-            <Button type="button" variant="outline" onClick={() => { setDueDate(tomorrow()); setDatePickerOpen(false); }} className={cn('min-w-0 px-1', dueDate === tomorrow() && '!bg-control-selected !text-control-selected-foreground')}>Amanhã</Button>
+            <Button type="button" variant="outline" onClick={() => { setDueDate(spToday()); setDatePickerOpen(false); }} className={cn('min-w-0 px-1', dueDate === spToday() && '!bg-[#DE0D18] !text-white !border-[#DE0D18]')}>Hoje</Button>
+            <Button type="button" variant="outline" onClick={() => { setDueDate(tomorrow()); setDatePickerOpen(false); }} className={cn('min-w-0 px-1', dueDate === tomorrow() && '!bg-[#DE0D18] !text-white !border-[#DE0D18]')}>Amanhã</Button>
             <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
               <PopoverTrigger asChild>
-                <Button type="button" variant="outline" aria-label="Escolher data" title="Escolher data" className={cn('min-w-0 px-1', ![spToday(), tomorrow()].includes(dueDate) && '!bg-control-selected !text-control-selected-foreground')}><CalendarDays className="h-6 w-6" /></Button>
+                <Button type="button" variant="outline" aria-label="Escolher data" title="Escolher data" className={cn('min-w-0 px-1', ![spToday(), tomorrow()].includes(dueDate) && '!bg-[#DE0D18] !text-white !border-[#DE0D18]')}><CalendarDays className="h-6 w-6" /></Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 pointer-events-auto" align="center">
                 <Calendar
