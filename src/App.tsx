@@ -17,7 +17,6 @@ import EditTask from "@/pages/EditTask";
 import Employees from "@/pages/Employees";
 import Messages from "@/pages/Messages";
 import Auth from "@/pages/Auth";
-import ResetPassword from "@/pages/ResetPassword";
 import Install from "@/pages/Install";
 import Profile from "@/pages/Profile";
 import EmployeeDetail from "@/pages/EmployeeDetail";
@@ -50,7 +49,6 @@ const App = () => (
             <BiometricGate>
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/install" element={<Install />} />
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/" element={<Dashboard />} />

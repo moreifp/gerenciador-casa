@@ -1,37 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Mail, Lock, ArrowRight, Phone, MessageCircle } from 'lucide-react';
+import { ArrowRight, Phone, MessageCircle } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const inviteToken = searchParams.get('invite');
-  const invitedEmail = searchParams.get('email');
-  const isInvite = !!(inviteToken && invitedEmail);
   const redirectTo = (location.state as { from?: string } | null)?.from || '/';
 
-  const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'whatsapp' | 'otp'>(isInvite ? 'signup' : 'login');
-  const [email, setEmail] = useState(invitedEmail || '');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [mode, setMode] = useState<'login' | 'whatsapp' | 'otp'>('login');
   const [phone, setPhone] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (isInvite) {
-      setMode('signup');
-      setEmail(invitedEmail!);
-    }
-  }, [isInvite, invitedEmail]);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -54,53 +40,6 @@ export default function Auth() {
     if (error) {
       toast.error('Não foi possível entrar com a Apple. Tente novamente.');
       setLoading(false);
-    }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      navigate(redirectTo, { replace: true });
-    }
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo: window.location.origin,
-      },
-    });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Verifique seu email para confirmar o cadastro.');
-      setMode('login');
-    }
-  };
-
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Email de recuperação enviado!');
-      setMode('login');
     }
   };
 
@@ -165,38 +104,13 @@ export default function Auth() {
           <h1 className="font-display text-[26px] font-bold text-primary"><img src="/logo.png" alt="" className="mx-auto mb-2 h-28 w-auto" />Gerenciador Casa</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {mode === 'login' && 'Entre com sua conta'}
-            {mode === 'signup' && 'Crie sua conta'}
-            {mode === 'forgot' && 'Recuperar senha'}
             {mode === 'whatsapp' && 'Entrar via WhatsApp'}
             {mode === 'otp' && 'Digite o código recebido'}
           </p>
         </div>
 
         {mode === 'login' && (
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" className="pl-10" required />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="pl-10" required />
-              </div>
-            </div>
-            <Button type="submit" className="w-full gap-2" disabled={loading}>
-              {loading ? 'Entrando...' : 'Entrar'} <ArrowRight className="h-4 w-4" />
-            </Button>
-
-            <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-              <div className="relative flex justify-center text-sm"><span className="bg-card px-2 text-muted-foreground">ou</span></div>
-            </div>
-
+          <div className="space-y-4">
             <Button
               type="button"
               variant="outline"
@@ -235,59 +149,7 @@ export default function Auth() {
               <MessageCircle className="h-4 w-4" /> Entrar via WhatsApp
             </Button>
 
-            <div className="flex justify-between text-sm">
-               <Button type="button" variant="link" onClick={() => setMode('forgot')}>Esqueci minha senha</Button>
-               <Button type="button" variant="link" onClick={() => setMode('signup')}>Criar conta</Button>
-            </div>
-          </form>
-        )}
-
-        {mode === 'signup' && (
-          <form onSubmit={handleSignup} className="space-y-4">
-            {isInvite && (
-              <div className="rounded-md bg-primary/10 border border-primary/20 p-3 text-sm">
-                <p className="font-medium text-primary">Você foi convidado(a) 🎉</p>
-                <p className="text-muted-foreground text-sm mt-1">
-                  Complete o cadastro criando uma senha para acessar o sistema.
-                </p>
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nome completo</Label>
-              <Input id="fullName" value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Seu nome" required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="emailSignup">Email</Label>
-              <Input id="emailSignup" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required disabled={isInvite} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="passwordSignup">Senha</Label>
-              <Input id="passwordSignup" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" minLength={6} required />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Cadastrando...' : 'Criar Conta'}
-            </Button>
-            {!isInvite && (
-               <Button type="button" variant="link" onClick={() => setMode('login')} className="w-full text-center">
-                Já tenho conta
-               </Button>
-            )}
-          </form>
-        )}
-
-        {mode === 'forgot' && (
-          <form onSubmit={handleForgotPassword} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="emailReset">Email</Label>
-              <Input id="emailReset" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Enviando...' : 'Enviar Link de Recuperação'}
-            </Button>
-             <Button type="button" variant="link" onClick={() => setMode('login')} className="w-full text-center">
-              Voltar ao login
-             </Button>
-          </form>
+          </div>
         )}
 
         {mode === 'whatsapp' && (
@@ -314,7 +176,7 @@ export default function Auth() {
               {loading ? 'Enviando...' : 'Enviar Código'} <MessageCircle className="h-4 w-4" />
             </Button>
              <Button type="button" variant="link" onClick={() => setMode('login')} className="w-full text-center">
-              Voltar ao login com email
+              Voltar
              </Button>
           </form>
         )}
