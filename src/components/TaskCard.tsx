@@ -10,6 +10,10 @@ import { CheckCircle, RotateCcw, MessageSquare, ChevronDown, ChevronUp, Trash2, 
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { daysLate, lateLabel } from '@/lib/dates';
+
+// Guarda a hora do último reenvio por tarefa (sobrevive à troca de tela) e trava o botão por 2 min.
+const TRAVA_REENVIO_MS = 2 * 60 * 1000;
+const ultimoReenvio = new Map<string, number>();
 import { profileInitials } from '@/lib/initials';
 import { useAuth } from '@/lib/auth';
 import { useTaskReplies, markRepliesReviewed, replyTime } from '@/lib/replies';
@@ -145,8 +149,16 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
   const { status, complete: completeRaw } = useCompletion(task, refreshTasks);
   const complete = async () => { await completeRaw(); markRepliesReviewed(task.id, user?.id); };
   const [sending, setSending] = useState(false);
+  const [sentAt, setSentAt] = useState<number | null>(() => ultimoReenvio.get(task.id) ?? null);
   const [expanded, setExpanded] = useState(false);
   const [proofs, setProofs] = useState<TaskProof[]>([]);
+  const travado = sentAt !== null && Date.now() - sentAt < TRAVA_REENVIO_MS;
+
+  useEffect(() => {
+    if (!travado || sentAt === null) return;
+    const t = setTimeout(() => setSentAt(null), TRAVA_REENVIO_MS - (Date.now() - sentAt));
+    return () => clearTimeout(t);
+  }, [travado, sentAt]);
   const assignees = employees.filter(p => task.assignee_ids.includes(p.id));
   const late = status === 'completed' ? 0 : daysLate(task.due_date);
 
@@ -161,7 +173,13 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
     try {
       const { data, error } = await supabase.functions.invoke('send-whatsapp', { body: { task_id: task.id, resend: true } });
       if (error || data?.failed) toast.error('Não foi possível reenviar pelo WhatsApp');
-      else toast.success(data?.sent ? 'WhatsApp reenviado' : 'Nenhum responsável selecionado');
+      else if (!data?.sent) toast.error('Nenhum responsável selecionado');
+      else {
+        const agora = Date.now();
+        ultimoReenvio.set(task.id, agora);
+        setSentAt(agora);
+        toast.success('WhatsApp reenviado');
+      }
     } catch { toast.error('Não foi possível reenviar pelo WhatsApp'); }
     finally { setSending(false); }
   };
@@ -212,7 +230,9 @@ function AdminTaskCard({ task, showUnarchive, highlighted }: { task: Task; showU
     </div>
     <div className="grid grid-cols-2 gap-2">
       {status !== 'completed' ? <Button onClick={complete} className={cn("min-w-0 w-full", latestDone && "ring-4 ring-status-completed ring-offset-2 animate-pulse", "!bg-status-completed !border-status-completed !text-white font-bold hover:!bg-status-completed")}><CheckCircle className="size-7 shrink-0" /> Concluída</Button> : <Button variant="outline" onClick={pending} className="min-w-0 w-full"><RotateCcw className="h-6 w-6 shrink-0" /> Pendente</Button>}
-      <Button variant="outline" onClick={resend} disabled={sending} className="min-w-0 w-full"><RotateCcw className="h-6 w-6 shrink-0" /> Reenviar</Button>
+      {travado && sentAt !== null
+        ? <Button variant="outline" disabled className="min-w-0 w-full !opacity-100 !border-status-completed !text-status-completed font-bold"><CheckCircle className="h-6 w-6 shrink-0" /> Enviado {new Date(sentAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</Button>
+        : <Button variant="outline" onClick={resend} disabled={sending} className="min-w-0 w-full"><RotateCcw className="h-6 w-6 shrink-0" /> {sending ? 'Enviando…' : 'Reenviar'}</Button>}
     </div>
     <div className="flex gap-2">
       <Button variant="outline" size="icon" title="Editar" aria-label="Editar tarefa" onClick={() => navigate(`/tasks/${task.id}/edit`)}><Pencil className="h-6 w-6" /></Button>
