@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export const APP_NAME = "Gerenciador Casa";
-export const APP_URL = Deno.env.get("WA_APP_URL") || "https://casaorganizada10.lovable.app";
+export const APP_URL = Deno.env.get("WA_APP_URL") || "https://gerenciador-casa.evoque-global.workers.dev";
 export const TZ = "America/Sao_Paulo";
 
 export const corsHeaders = {

@@ -11,10 +11,6 @@ function isRefusedContext(): boolean {
   return (
     !import.meta.env.PROD ||
     inIframe ||
-    h.startsWith("id-preview--") || h.startsWith("preview--") ||
-    h === "lovableproject.com" || h.endsWith(".lovableproject.com") ||
-    h === "lovableproject-dev.com" || h.endsWith(".lovableproject-dev.com") ||
-    h === "beta.lovable.dev" || h.endsWith(".beta.lovable.dev") ||
     new URLSearchParams(window.location.search).get("sw") === "off"
   );
 }
